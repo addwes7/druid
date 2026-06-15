@@ -31,13 +31,18 @@ jobs:
       - name: Build with Maven if test jdk8
         if: ${{ matrix.java == '8' || matrix.java == '11'}}
         shell: bash
-        run: ./mvnw -Pgen-javadoc clean package -B
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            ./mvnw -Pgen-javadoc clean package -B -Dexcludes='**/MaxEvictableIdleTimeMillisTest*.java,**/MaxPhyTimeMillisTest.java'
+          else
+            ./mvnw -Pgen-javadoc clean package -B
+          fi
       - name: Build with Maven if test jdk17
         if: ${{ matrix.java == '17' || matrix.java == '21' }}
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B -Dexcludes='**/MaxEvictableIdleTimeMillisTest.java'
+            ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B -Dexcludes='**/MaxEvictableIdleTimeMillisTest*.java,**/MaxPhyTimeMillisTest.java'
           else
             ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B
           fi
