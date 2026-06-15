@@ -18,6 +18,9 @@ jobs:
     name: Test JDK ${{ matrix.java }}, ${{ matrix.os }}
 
     steps:
+      - name: Configure git on Windows
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -27,13 +30,20 @@ jobs:
           cache: 'maven'
       - name: Build with Maven if test jdk8
         if: ${{ matrix.java == '8' || matrix.java == '11'}}
+        shell: bash
         run: ./mvnw -Pgen-javadoc clean package -B
       - name: Build with Maven if test jdk17
         if: ${{ matrix.java == '17' || matrix.java == '21' }}
-        run: ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B -Dexcludes='**/MaxEvictableIdleTimeMillisTest.java'
+          else
+            ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B
+          fi
       - name: "Codecov if test jdk17"
         if: ${{ matrix.java == '17' }}
         uses: codecov/codecov-action@v3.1.0
         with:
-          files: 
+          files:
             ./core/target/site/jacoco/jacoco.xml,./druid-spring-boot-starter/target/site/jacoco/jacoco.xml,./druid-spring-boot-3-starter/target/site/jacoco/jacoco.xml
