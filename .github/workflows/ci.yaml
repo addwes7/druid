@@ -33,7 +33,7 @@ jobs:
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            ./mvnw -Pgen-javadoc clean package -B -Dexcludes='**/MaxEvictableIdleTimeMillisTest*.java,**/MaxPhyTimeMillisTest.java'
+            ./mvnw -Pgen-javadoc clean package -B -Dtest='!MaxEvictableIdleTimeMillisTest,!MaxEvictableIdleTimeMillisTest2,!MaxPhyTimeMillisTest' -Dsurefire.failIfNoSpecifiedTests=false
           else
             ./mvnw -Pgen-javadoc clean package -B
           fi
@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B -Dexcludes='**/MaxEvictableIdleTimeMillisTest*.java,**/MaxPhyTimeMillisTest.java'
+            ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B -Dtest='!MaxEvictableIdleTimeMillisTest,!MaxEvictableIdleTimeMillisTest2,!MaxPhyTimeMillisTest' -Dsurefire.failIfNoSpecifiedTests=false
           else
             ./mvnw -Penable-for-jdk17+,gen-code-cov clean package -B
           fi
