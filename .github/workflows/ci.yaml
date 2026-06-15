@@ -1,29 +1,23 @@
----
 name: Java CI
 
 on:
   push:
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-excluding-paths
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-
+  workflow_dispatch:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        java: [ 8, 11, 17, 21 ]
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-15-intel
+        java: [8, 11, 17, 21]
       fail-fast: false
       max-parallel: 16
     name: Test JDK ${{ matrix.java }}, ${{ matrix.os }}
 
-    steps:
+   steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -41,4 +35,5 @@ jobs:
         if: ${{ matrix.java == '17' }}
         uses: codecov/codecov-action@v3.1.0
         with:
-          files: ./core/target/site/jacoco/jacoco.xml,./druid-spring-boot-starter/target/site/jacoco/jacoco.xml,./druid-spring-boot-3-starter/target/site/jacoco/jacoco.xml
+          files: 
+            ./core/target/site/jacoco/jacoco.xml,./druid-spring-boot-starter/target/site/jacoco/jacoco.xml,./druid-spring-boot-3-starter/target/site/jacoco/jacoco.xml
